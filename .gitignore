@@ -1,0 +1,23 @@
+# Environment
+.env
+.env.*
+
+# Node
+node_modules/
+npm-debug.log*
+
+
+# Build
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# Test PDFs
+*.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
