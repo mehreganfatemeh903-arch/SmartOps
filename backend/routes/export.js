@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const puppeteer = require('puppeteer-core');
+
 const ExcelJS = require('exceljs');
 
 const Task = require('../models/Task');
@@ -495,7 +495,7 @@ router.get('/pdf', async (req, res) => {
       tasks,
       fontBase64
     );
-
+    const puppeteer = await import('puppeteer-core');
 
     browser = await puppeteer.launch({
 
