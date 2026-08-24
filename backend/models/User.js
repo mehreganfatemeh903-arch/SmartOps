@@ -1,4 +1,5 @@
 ﻿const mongoose = require('mongoose');
+
 const userSchema = new mongoose.Schema(
   {
     email: {
@@ -8,19 +9,23 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true
     },
+
     passwordHash: {
       type: String,
       required: true
     },
+
     name: {
       type: String,
       default: ''
     },
+
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user'
     },
+
     status: {
       type: String,
       enum: ['active', 'suspended', 'inactive'],
@@ -29,4 +34,5 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 module.exports = mongoose.model('User', userSchema);

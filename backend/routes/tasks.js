@@ -24,77 +24,104 @@ function escapeRegex(value) {
 
 /*
 |--------------------------------------------------------------------------
-| GET /api/tasks
+| Build task filter
 |--------------------------------------------------------------------------
-| Filters:
-|   status
-|   priority
-|   q
-|   search
-|   projectId
-|   project
+|
+| User:
+|   فقط Taskهای خودش
+|
+| Admin:
+|   تمام Taskها
+|
+*/
+
+function buildTaskFilter(req, query = {}) {
+  const {
+    status,
+    priority,
+    q,
+    search,
+    projectId,
+    project
+  } = query;
+
+  const filter = {};
+
+  // کاربران عادی فقط Taskهای خودشان را می‌بینند
+  // Admin تمام Taskها را می‌بیند
+  if (req.user.role !== 'admin') {
+    filter.userId = req.user.id;
+  }
+
+  if (status) {
+    filter.status = status;
+  }
+
+  if (priority) {
+    filter.priority = priority;
+  }
+
+  const selectedProject = projectId || project;
+
+  if (selectedProject) {
+    if (!mongoose.Types.ObjectId.isValid(selectedProject)) {
+      return {
+        error: {
+          status: 400,
+          message: 'شناسه پروژه نامعتبر است'
+        }
+      };
+    }
+
+    filter.projectId = selectedProject;
+  }
+
+  const searchValue = search || q;
+
+  if (searchValue && searchValue.trim()) {
+    const safeSearch = escapeRegex(
+      searchValue.trim()
+    );
+
+    filter.$or = [
+      {
+        title: {
+          $regex: safeSearch,
+          $options: 'i'
+        }
+      },
+      {
+        description: {
+          $regex: safeSearch,
+          $options: 'i'
+        }
+      }
+    ];
+  }
+
+  return { filter };
+}
+
+/*
+|--------------------------------------------------------------------------
+| GET /api/tasks
 |--------------------------------------------------------------------------
 */
 
 router.get('/', async (req, res, next) => {
   try {
-    const {
-      status,
-      priority,
-      q,
-      search,
-      projectId,
-      project
-    } = req.query;
+    const result = buildTaskFilter(
+      req,
+      req.query
+    );
 
-    const filter = {
-      userId: req.user.id
-    };
-
-    if (status) {
-      filter.status = status;
+    if (result.error) {
+      return res.status(result.error.status).json({
+        error: result.error.message
+      });
     }
 
-    if (priority) {
-      filter.priority = priority;
-    }
-
-    const selectedProject = projectId || project;
-
-    if (selectedProject) {
-      if (!mongoose.Types.ObjectId.isValid(selectedProject)) {
-        return res.status(400).json({
-          error: 'شناسه پروژه نامعتبر است'
-        });
-      }
-
-      filter.projectId = selectedProject;
-    }
-
-    const searchValue = search || q;
-
-    if (searchValue && searchValue.trim()) {
-      const safeSearch = escapeRegex(
-        searchValue.trim()
-      );
-
-      filter.$or = [
-        {
-          title: {
-            $regex: safeSearch,
-            $options: 'i'
-          }
-        },
-        {
-          description: {
-            $regex: safeSearch,
-            $options: 'i'
-          }
-        }
-      ];
-    }
-
-    const tasks = await Task.find(filter)
+    const tasks = await Task.find(result.filter)
       .populate('projectId', 'name')
       .sort({ createdAt: -1 });
 
@@ -112,9 +139,12 @@ router.get('/', async (req, res, next) => {
 
 router.get('/stats', async (req, res, next) => {
   try {
-    const tasks = await Task.find({
-      userId: req.user.id
-    });
+    const filter =
+      req.user.role === 'admin'
+        ? {}
+        : { userId: req.user.id };
+
+    const tasks = await Task.find(filter);
 
     const now = new Date();
 
@@ -280,11 +310,18 @@ router.put(
         });
       }
 
+      const filter = {
+        _id: id
+      };
+
+      // کاربر عادی فقط Task خودش را ویرایش کند
+      // Admin می‌تواند تمام Taskها را ویرایش کند
+      if (req.user.role !== 'admin') {
+        filter.userId = req.user.id;
+      }
+
       const updated = await Task.findOneAndUpdate(
-        {
-          _id: id,
-          userId: req.user.id
-        },
+        filter,
         req.body,
         {
           new: true,
@@ -323,10 +360,18 @@ router.delete(
         });
       }
 
-      const deleted = await Task.findOneAndDelete({
-        _id: id,
-        userId: req.user.id
-      });
+      const filter = {
+        _id: id
+      };
+
+      // کاربر عادی فقط Task خودش را حذف کند
+      // Admin می‌تواند تمام Taskها را حذف کند
+      if (req.user.role !== 'admin') {
+        filter.userId = req.user.id;
+      }
+
+      const deleted =
+        await Task.findOneAndDelete(filter);
 
       if (!deleted) {
         return res.status(404).json({

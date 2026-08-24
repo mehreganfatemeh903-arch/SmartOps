@@ -37,6 +37,7 @@ export default function AdminPanel() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
+          err.response?.data?.message ||
           'بارگذاری اطلاعات پنل ادمین ناموفق بود'
       );
     }
@@ -53,6 +54,7 @@ export default function AdminPanel() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
+          err.response?.data?.message ||
           'جست‌وجوی کاربران ناموفق بود'
       );
     }
@@ -74,6 +76,7 @@ export default function AdminPanel() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
+          err.response?.data?.message ||
           'تغییر نقش کاربر ناموفق بود'
       );
     }
@@ -95,6 +98,7 @@ export default function AdminPanel() {
     } catch (err) {
       setError(
         err.response?.data?.error ||
+          err.response?.data?.message ||
           'تغییر وضعیت کاربر ناموفق بود'
       );
     }
@@ -107,12 +111,13 @@ export default function AdminPanel() {
 
       if (type === 'pdf') {
         await exportPdf();
-      } else {
+      } else if (type === 'excel') {
         await exportExcel();
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
+          err.response?.data?.message ||
           'دانلود فایل خروجی ناموفق بود'
       );
     } finally {
@@ -196,7 +201,10 @@ export default function AdminPanel() {
 
           <button
             type="button"
-            onClick={loadAll}
+            onClick={() => {
+              setSearch('');
+              loadAll();
+            }}
           >
             نمایش همه
           </button>
@@ -249,9 +257,7 @@ export default function AdminPanel() {
 
                     <td>
                       <select
-                        value={
-                          user.status || 'active'
-                        }
+                        value={user.status || 'active'}
                         onChange={(e) =>
                           handleStatusChange(
                             user._id,
@@ -283,9 +289,7 @@ export default function AdminPanel() {
       <div className="export-buttons">
         <button
           type="button"
-          onClick={() =>
-            handleExport('pdf')
-          }
+          onClick={() => handleExport('pdf')}
           disabled={exporting === 'pdf'}
         >
           {exporting === 'pdf'
@@ -295,9 +299,7 @@ export default function AdminPanel() {
 
         <button
           type="button"
-          onClick={() =>
-            handleExport('excel')
-          }
+          onClick={() => handleExport('excel')}
           disabled={exporting === 'excel'}
         >
           {exporting === 'excel'
