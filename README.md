@@ -321,21 +321,23 @@ This project is intended for portfolio and educational purposes.
 
 ### Dashboard
 
-![SmartOps Dashboard](screenshots/dashboard.png)
 
 ### Task Management
 
-![SmartOps Task Management](screenshots/tasks.png)
 
 ### Project Management
 
-![SmartOps Project Management](screenshots/projects.png)
 
 ### Administration Panel
 
-![SmartOps Admin Panel](screenshots/admin-panel.png)
 
 ### PDF Reporting
 
+![SmartOps Dashboard](screenshots/dashboard.png)
+![SmartOps Filters](screenshots/filters.png)
+![SmartOps Analytics](screenshots/analytics.png)
+![SmartOps Task Management](screenshots/tasks.png)
+![SmartOps Project Management](screenshots/projects.png)
+![SmartOps Admin Panel](screenshots/admin-panel-new.png)
 ![SmartOps PDF Report](screenshots/report-pdf.png)
 
