@@ -316,3 +316,26 @@ https://github.com/mehreganfatemeh903-arch/SmartOps
 License
 
 This project is intended for portfolio and educational purposes.
+
+## Screenshots
+
+### Dashboard
+
+![SmartOps Dashboard](screenshots/dashboard.png)
+
+### Task Management
+
+![SmartOps Task Management](screenshots/tasks.png)
+
+### Project Management
+
+![SmartOps Project Management](screenshots/projects.png)
+
+### Administration Panel
+
+![SmartOps Admin Panel](screenshots/admin-panel.png)
+
+### PDF Reporting
+
+![SmartOps PDF Report](screenshots/report-pdf.png)
+
