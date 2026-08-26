@@ -125,10 +125,7 @@ export default function AdminPanel() {
     }
   }
 
-  const totalTasks =
-    (overview?.doneTasksCount || 0) +
-    (overview?.pendingTasksCount || 0);
-
+  const totalTasks = overview?.tasksCount ?? 0;
   return (
     <section className="panel admin-panel" dir="rtl">
       <h2>پنل ادمین</h2>
